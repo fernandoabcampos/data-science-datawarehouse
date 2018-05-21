@@ -1,15 +1,20 @@
 library(XML)
+
+extract_table_from_html <- function(file.name, labels, N, R) {
+  table <- readHTMLTable(paste("PRA2-Data/", file.name), which = N, skip.rows = R)
+  head(table)
+  colnames(table)
+  table <- table[ , -which(names(table) %in% c("V9"))]
+  colnames(table)
+  colnames(table) <- labels
+  table
+  return(table)
+}
+
+file.name <- "aec-214_2012.html"
 labels <- c("Comarca", "Estaciones", "Altitud", "Media anual", "Media de máximas", "Media de mínimas",
             "Máxima absoluta", "Mínima absoluta")
-url <- "file:///Users/fbarbeiro/Desktop/Master%20-%20Data%20Science/UOC/Datawarehouse/PRACs/20180522-PRAC2/PRA2-Datos/aec-214_2012.html"
 
-table = readHTMLTable(url, which = 1, skip.rows = 1) # leyendo la primera tabla
-head(table)
-str(table)
-colnames(table)
+table1 <- extract_table_from_html(file.name, labels, 1, 1) #leyendo 1ª tabla del html y saltando 1 linea
+head(table1)
 
-#Identificada columna sin datos V9, borramos
-table <- table[ , -which(names(table) %in% c("V9"))]
-colnames(table)
-colnames(table) <- labels
-table
