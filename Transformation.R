@@ -36,24 +36,41 @@ extract_table_from_html <- function(file.name, labels, N, R, eliminate_empty_col
   return(table)
 }
 
-generate_xls <- function(source) {
-  labels1 <- c("Comarca", "Estaciones", "Altitud", "Media anual", "Media de máximas", "Media de mínimas","Máxima absoluta", "Mínima absoluta")
-  labels2 <- c("Comarca", "Estaciones", "Altitud", "Precipitación anual", "Humedad relativa", "Velocidad media", "Dirección dominante")
-  numerics1 <- labels1[3:8]
-  numerics2 <- labels2[3:6]
+generate_xls <- function(source, labels.table1, lables.table2, numerics.table1, numerics.table2, skip.table1, skip.table2) {
+  
   eliminate_empty <- TRUE
-  table1 <- extract_table_from_html(source, labels1, 1, 1, eliminate_empty, numerics1)
-  table2 <- extract_table_from_html(source, labels2, 2, 1:2, eliminate_empty, numerics2) 
+  table1 <- extract_table_from_html(source, labels.table1, 1, skip.table1, eliminate_empty, numerics.table1)
+  table2 <- extract_table_from_html(source, lables.table2, 2, skip.table2, eliminate_empty, numerics.table2) 
   x <- list(sheet_a = table1, sheet_b = table2)
   WriteXLS(x, ExcelFileName = paste0(source, "_tabla.xls"))
 }
 
-generate_xls("aec-214_2009.html")
-generate_xls("aec-214_2010.html")
-generate_xls("aec-214_2011.html")
-generate_xls("aec-214_2012.html")
-generate_xls("aec-214_2013.html")
+########## ------------- Ficheros aec-214 -------------------------------------------------------------------------------------------------------------
+labels_aec_214_1 <- c("Comarca", "Estaciones", "Altitud", "Media anual", "Media de máximas", "Media de mínimas","Máxima absoluta", "Mínima absoluta")
+labels_aec_214_2 <- c("Comarca", "Estaciones", "Altitud", "Precipitación anual", "Humedad relativa", "Velocidad media", "Dirección dominante")
+numerics_aec_214_1 <- labels_aec_214_1[3:8]
+numerics_aec_214_2 <- labels_aec_214_2[3:6]
 
+generate_xls("aec-214_2009.html", labels_aec_214_1, labels_aec_214_2, numerics_aec_214_1, numerics_aec_214_2, 1, 1:2)
+generate_xls("aec-214_2010.html", labels_aec_214_1, labels_aec_214_2, numerics_aec_214_1, numerics_aec_214_2, 1, 1:2)
+generate_xls("aec-214_2011.html", labels_aec_214_1, labels_aec_214_2, numerics_aec_214_1, numerics_aec_214_2, 1, 1:2)
+generate_xls("aec-214_2012.html", labels_aec_214_1, labels_aec_214_2, numerics_aec_214_1, numerics_aec_214_2, 1, 1:2)
+generate_xls("aec-214_2013.html", labels_aec_214_1, labels_aec_214_2, numerics_aec_214_1, numerics_aec_214_2, 1, 1:2)
+
+
+
+########## ------------- Ficheros aec-217 -------------------------------------------------------------------------------------------------------------
+
+labels_aec_217_1 <- c("Comarca", "Estaciones", "Enero", "Febrero", "Marzo", "Abril","Mayo", "Junio")
+labels_aec_217_2 <- c("Comarca", "Estaciones", "Julio", "Agosto", "Septiembre", "Octubre","Noviembre", "Diciembre", "Total")
+numerics_aec_217_1 <- labels_aec_217_1[3:8]
+numerics_aec_217_2 <- labels_aec_217_2[3:9]
+
+generate_xls("aec-217_2009.html", labels_aec_217_1, labels_aec_217_2, numerics_aec_217_1, numerics_aec_217_2, 1, 1)
+generate_xls("aec-217_2010.html", labels_aec_217_1, labels_aec_217_2, numerics_aec_217_1, numerics_aec_217_2, 1, 1)
+generate_xls("aec-217_2011.html", labels_aec_217_1, labels_aec_217_2, numerics_aec_217_1, numerics_aec_217_2, 1, 1)
+generate_xls("aec-217_2012.html", labels_aec_217_1, labels_aec_217_2, numerics_aec_217_1, numerics_aec_217_2, 1, 1)
+generate_xls("aec-217_2013.html", labels_aec_217_1, labels_aec_217_2, numerics_aec_217_1, numerics_aec_217_2, 1, 1)
 
 
 
