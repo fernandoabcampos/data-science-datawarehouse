@@ -1,42 +1,82 @@
 library(XML)
 library(WriteXLS)
 
-table.aux = readHTMLTable(paste0("PRA2-Data/aec-214_2012.html"), which = 1, skip.rows = 1)
+table.aux = readHTMLTable(paste0("PRA2-Data/aec-214_2009.html"), which = 1, skip.rows = 1)
+if(TRUE) {
+  table.aux <- table.aux[,!apply(table.aux, 2, function(x) all(gsub(" ", "", x)=="", na.rm=TRUE))]
+}
+colnames(table.aux) <- labels1
+table.aux <- table.aux[complete.cases(table.aux), ]
+
+
+bla = make.names(data.frame(ind = which(table.aux == ":", arr.ind = TRUE)), unique=TRUE)
+bla
+indices <- suppressWarnings(data.frame(ind = which(table.aux == ":", arr.ind = TRUE))) # He detectado mirando los ficheros que habian datos incompletos
+table.aux <- table.aux[-unique(indices$ind.row), ]
+
+
+
+
+
+
+
+table.aux <- table.aux[,!apply(table.aux, 2, function(x) all(gsub(" ", "", x)=="", na.rm=TRUE))]
+
+
+apply(table.aux, 2, function(x) all(gsub(":", "", x)=="", na.rm=TRUE))
+table.aux <- table.aux[complete.cases(table.aux), ]
+table.aux[- grep(":", table.aux),]
+
+invalid.row
+getElement(invalid, "row")
+attr(invalid, 'row')
+
+
 table.aux2 = readHTMLTable(paste0("PRA2-Data/aec-214_2012.html"), which = 2, skip.rows = 1:2)
+
+
 
 
 convert_to_numeric <- function(table, numerics) {
   table[numerics] <- lapply(table[numerics], function(x) as.numeric(as.character(as.numeric(gsub(",", ".", gsub("\\.", "", x))))))
   return(table)
 }
+
 extract_table_from_html <- function(file.name, labels, N, R, eliminate_empty_column, numerics) {
   table = readHTMLTable(paste0("PRA2-Data/", file.name), which = N, skip.rows = R)
-  head(table)
-  colnames(table)
   if(eliminate_empty_column) {
     table <- table[,!apply(table, 2, function(x) all(gsub(" ", "", x)=="", na.rm=TRUE))]
   }
-  colnames(table)
   colnames(table) <- labels
+  table <- table[complete.cases(table), ]
+  
+  
+  indices <- suppressWarnings(data.frame(ind = which(table == ":", arr.ind = TRUE))) # He detectado mirando los ficheros que habian datos incompletos
+  table <- table[-unique(indices$ind.row), ]
+  
   table <- convert_to_numeric(table, numerics)
   return(table)
 }
 
-file.name <- "aec-214_2012.html"
-eliminate_empty <- TRUE
+generate_xls <- function(source) {
+  labels1 <- c("Comarca", "Estaciones", "Altitud", "Media anual", "Media de máximas", "Media de mínimas","Máxima absoluta", "Mínima absoluta")
+  labels2 <- c("Comarca", "Estaciones", "Altitud", "Precipitación anual", "Humedad relativa", "Velocidad media", "Dirección dominante")
+  numerics1 <- labels1[3:8]
+  numerics2 <- labels2[3:6]
+  eliminate_empty <- TRUE
+  table1 <- extract_table_from_html(file.name, labels1, 1, 1, eliminate_empty, numerics1)
+  table2 <- extract_table_from_html(file.name, labels2, 2, 1:2, eliminate_empty, numerics2) 
+  x <- list(sheet_a = table1, sheet_b = table2)
+  WriteXLS(x, ExcelFileName = paste0(file.name, "_tabla.xls"))
+}
 
-labels <- c("Comarca", "Estaciones", "Altitud", "Media anual", "Media de máximas", "Media de mínimas","Máxima absoluta", "Mínima absoluta")
-numerics <- labels[3:8]
-table1 <- extract_table_from_html(file.name, labels, 1, 1, eliminate_empty, numerics)
+generate_xls("aec-214_2009.html")
+generate_xls("aec-214_2010.html")
+generate_xls("aec-214_2011.html")
+generate_xls("aec-214_2012.html")
+generate_xls("aec-214_2013.html")
 
-labels <- c("Comarca", "Estaciones", "Altitud", "Precipitación anual", "Humedad relativa", "Velocidad media", "Dirección dominante")
-numerics <- labels[3:6]
-table2 <- extract_table_from_html(file.name, labels, 2, 1:2, eliminate_empty, numerics) 
 
-head(table1)
-str(table1)
-head(table2)
-str(table2)
 
-x <- list(sheet_a = table1, sheet_b = table2)
-WriteXLS(x, ExcelFileName = paste0(file.name, "_tabla_", 1, ".xls"))
+
+
