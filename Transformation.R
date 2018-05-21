@@ -1,41 +1,7 @@
 library(XML)
 library(WriteXLS)
 
-table.aux = readHTMLTable(paste0("PRA2-Data/aec-214_2009.html"), which = 1, skip.rows = 1)
-if(TRUE) {
-  table.aux <- table.aux[,!apply(table.aux, 2, function(x) all(gsub(" ", "", x)=="", na.rm=TRUE))]
-}
-colnames(table.aux) <- labels1
-table.aux <- table.aux[complete.cases(table.aux), ]
-
-
-bla = make.names(data.frame(ind = which(table.aux == ":", arr.ind = TRUE)), unique=TRUE)
-bla
-indices <- suppressWarnings(data.frame(ind = which(table.aux == ":", arr.ind = TRUE))) # He detectado mirando los ficheros que habian datos incompletos
-table.aux <- table.aux[-unique(indices$ind.row), ]
-
-
-
-
-
-
-
-table.aux <- table.aux[,!apply(table.aux, 2, function(x) all(gsub(" ", "", x)=="", na.rm=TRUE))]
-
-
-apply(table.aux, 2, function(x) all(gsub(":", "", x)=="", na.rm=TRUE))
-table.aux <- table.aux[complete.cases(table.aux), ]
-table.aux[- grep(":", table.aux),]
-
-invalid.row
-getElement(invalid, "row")
-attr(invalid, 'row')
-
-
-table.aux2 = readHTMLTable(paste0("PRA2-Data/aec-214_2012.html"), which = 2, skip.rows = 1:2)
-
-
-
+#table.aux2 = readHTMLTable(paste0("PRA2-Data/aec-214_2012.html"), which = 2, skip.rows = 1:2)
 
 convert_to_numeric <- function(table, numerics) {
   table[numerics] <- lapply(table[numerics], function(x) as.numeric(as.character(as.numeric(gsub(",", ".", gsub("\\.", "", x))))))
