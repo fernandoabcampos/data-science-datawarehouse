@@ -40,8 +40,13 @@ generate_xls <- function(source, labels.table1, lables.table2, numerics.table1, 
   
   eliminate_empty <- TRUE
   table1 <- extract_table_from_html(source, labels.table1, 1, skip.table1, eliminate_empty, numerics.table1)
-  table2 <- extract_table_from_html(source, lables.table2, 2, skip.table2, eliminate_empty, numerics.table2) 
-  x <- list(sheet_a = table1, sheet_b = table2)
+  
+  if (!is.na(lables.table2)) {
+    table2 <- extract_table_from_html(source, lables.table2, 2, skip.table2, eliminate_empty, numerics.table2) 
+    x <- list(sheet_a = table1, sheet_b = table2)
+  } else {
+    x <- list(sheet_a = table1)
+  }
   WriteXLS(x, ExcelFileName = paste0(source, "_tabla.xls"))
 }
 
@@ -59,19 +64,16 @@ generate_xls("aec-214_2013.html", labels_aec_214_1, labels_aec_214_2, numerics_a
 
 
 
-########## ------------- Ficheros aec-217 -------------------------------------------------------------------------------------------------------------
+########## ------------- Ficheros aec-925 -------------------------------------------------------------------------------------------------------------
 
-labels_aec_217_1 <- c("Comarca", "Estaciones", "Enero", "Febrero", "Marzo", "Abril","Mayo", "Junio")
-labels_aec_217_2 <- c("Comarca", "Estaciones", "Julio", "Agosto", "Septiembre", "Octubre","Noviembre", "Diciembre", "Total")
-numerics_aec_217_1 <- labels_aec_217_1[3:8]
-numerics_aec_217_2 <- labels_aec_217_2[3:9]
+labels_aec_925_1 <- c("Municipio", "Comarca", "Código", "Altitud (m)", "Superficie (km2)", "Población")
+numerics_aec_925_1 <- labels_aec_925_1[4:6]
 
-generate_xls("aec-217_2009.html", labels_aec_217_1, labels_aec_217_2, numerics_aec_217_1, numerics_aec_217_2, 1, 1)
-generate_xls("aec-217_2010.html", labels_aec_217_1, labels_aec_217_2, numerics_aec_217_1, numerics_aec_217_2, 1, 1)
-generate_xls("aec-217_2011.html", labels_aec_217_1, labels_aec_217_2, numerics_aec_217_1, numerics_aec_217_2, 1, 1)
-generate_xls("aec-217_2012.html", labels_aec_217_1, labels_aec_217_2, numerics_aec_217_1, numerics_aec_217_2, 1, 1)
-generate_xls("aec-217_2013.html", labels_aec_217_1, labels_aec_217_2, numerics_aec_217_1, numerics_aec_217_2, 1, 1)
-
-
+generate_xls("aec-925_2009.html", labels_aec_925_1, NA, numerics_aec_925_1, NA, 1, NA)
+generate_xls("aec-925_2010.html", labels_aec_925_1, NA, numerics_aec_925_1, NA, 1, NA)
+generate_xls("aec-925_2011.html", labels_aec_925_1, NA, numerics_aec_925_1, NA, 1, NA)
+generate_xls("aec-925_2012.html", labels_aec_925_1, NA, numerics_aec_925_1, NA, 1, NA)
+generate_xls("aec-925_2013.html", labels_aec_925_1, NA, numerics_aec_925_1, NA, 1, NA)
+generate_xls("aec-925_2014.html", labels_aec_925_1, NA, numerics_aec_925_1, NA, 1, NA)
 
 
