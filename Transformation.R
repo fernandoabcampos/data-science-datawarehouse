@@ -76,4 +76,17 @@ generate_xls("aec-925_2012.html", labels_aec_925_1, NA, numerics_aec_925_1, NA, 
 generate_xls("aec-925_2013.html", labels_aec_925_1, NA, numerics_aec_925_1, NA, 1, NA)
 generate_xls("aec-925_2014.html", labels_aec_925_1, NA, numerics_aec_925_1, NA, 1, NA)
 
+## ---- Structure to prove transformations - ---------------------------------------------------------------------------------
+table.aux2 = readHTMLTable(paste0("PRA2-Data/aec-925_2009.html"), which = 1, skip.rows = 1)
+table.aux2 <- table.aux2[,!apply(table.aux2, 2, function(x) all(gsub(" ", "", x)=="", na.rm=TRUE))]
+colnames(table.aux2) <- labels_aec_925_1
+table.aux2 <- table.aux2[complete.cases(table.aux2), ]
+indices <- suppressWarnings(data.frame(ind = which(table.aux2 == ":", arr.ind = TRUE))) # He detectado mirando los ficheros que habian datos incompletos
+if (nrow(indices) > 0) {
+  table.aux2 <- table.aux2[-unique(indices$ind.row), ]
+}
+
+table.aux2 <- convert_to_numeric(table.aux2, numerics_aec_925_1)
+#return(table)
+
 
