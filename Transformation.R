@@ -31,7 +31,7 @@ extract_table_from_html <- function(file.name, labels, N, R, eliminate_empty_col
   if ('Provincia' %in% labels) {
     table$Codigo <- as.character(table$Codigo)
     provincia <- c('VI', 'AB', 'A', 'AL', 'AV', 'BA', 'IB', 'B', 'BU', 'CC', 'CA', 'CS', 'CR', 'CO', 'C', 'CU', 'GI', 'GR', 'GU', 'SS', 'H', 'HU', 'J', 'LE', 'L', 'LO', 'LU', 'M', 'MA', 'MU', 'NA', 'OU', 'O', 'P', 'GC', 'PO', 'SA', 'TF', 'S', 'SG', 'SE', 'SO', 'T', 'TE', 'TO', 'V', 'VA', 'BI', 'ZA', 'Z', 'CE', 'ML')
-    table$Provincia <- provincia[substr(table$Codigo, 1, 2)]
+    table$Provincia <- provincia[as.numeric(substr(table$Codigo, 1, 2))]
   }
   
   table <- convert_to_numeric(table, numerics)
@@ -99,7 +99,7 @@ generate_xls("aec-217_2013.html", labels_aec_217_1, labels_aec_217_2, numerics_a
 ########## ------------- Ficheros aec-925 -------------------------------------------------------------------------------------------------------------
 
 labels_aec_925_1 <- c("Municipio", "Comarca", "Codigo", "Altitud (m)", "Superficie (km2)", "Población", "Provincia")
-numerics_aec_925_1 <- labels_aec_925_1[5:7]
+numerics_aec_925_1 <- labels_aec_925_1[4:6]
 
 generate_xls("aec-925_2009.html", labels_aec_925_1, NA, numerics_aec_925_1, NA, 1, NA, NA)
 generate_xls("aec-925_2010.html", labels_aec_925_1, NA, numerics_aec_925_1, NA, 1, NA, NA)
@@ -112,5 +112,12 @@ generate_xls("aec-925_2014.html", labels_aec_925_1, NA, numerics_aec_925_1, NA, 
 
 table.aux2 = readHTMLTable(paste0("PRA2-Data/aec-925_2009.html"), which = 1, skip.rows = 1)
 str(table.aux2)
+if(TRUE && !('Provincia' %in% labels_aec_925_1)) {
+  table.aux2 <- table.aux2[,!apply(table.aux2, 2, function(x) all(gsub(" ", "", x)=="", na.rm=TRUE))]
+}
+table.aux2$V2 <- gsub(" \\(2\\)", "", table.aux2$V2) # misma estación, replacing (2)
+colnames(table.aux2) <- labels_aec_925_1
 
-
+table.aux2$Codigo <- as.character(table.aux2$Codigo)
+provincia <- c('VI', 'AB', 'A', 'AL', 'AV', 'BA', 'IB', 'B', 'BU', 'CC', 'CA', 'CS', 'CR', 'CO', 'C', 'CU', 'GI', 'GR', 'GU', 'SS', 'H', 'HU', 'J', 'LE', 'L', 'LO', 'LU', 'M', 'MA', 'MU', 'NA', 'OU', 'O', 'P', 'GC', 'PO', 'SA', 'TF', 'S', 'SG', 'SE', 'SO', 'T', 'TE', 'TO', 'V', 'VA', 'BI', 'ZA', 'Z', 'CE', 'ML')
+table.aux2$Provincia <- provincia[as.numeric(substr(table.aux2$Codigo, 1, 2))]
