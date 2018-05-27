@@ -1,26 +1,14 @@
-library(XML)
-library(WriteXLS)
-
-#table.aux2 = readHTMLTable(paste0("PRA2-Data/aec-214_2013.html"), which = 1, skip.rows = 1)
-#table.aux2 <- table.aux2[,!apply(table.aux2, 2, function(x) all(gsub(" ", "", x)=="", na.rm=TRUE))]
-#colnames(table.aux2) <- labels1
-#table.aux2 <- table.aux2[complete.cases(table.aux2), ]
-#indices <- suppressWarnings(data.frame(ind = which(table.aux2 == ":", arr.ind = TRUE))) # He detectado mirando los ficheros que habian datos incompletos
-#if (nrow(indices) > 0) {
-#  table.aux2 <- table.aux2[-unique(indices$ind.row), ]
-#}
-
-#table.aux2 <- convert_to_numeric(table.aux2, numerics1)
-#return(table)
+library(XML, WriteXLS)
 
 convert_to_numeric <- function(table, numerics) {
-  table[numerics] <- lapply(table[numerics], function(x) suppressWarnings(as.numeric(as.character(as.numeric(gsub(",", ".", gsub("\\.", "", x)))))))
+  # Cambia "," por "." y elimina "." que separaban miles (depues - as.numeric)
+  table[numerics] <- lapply(table[numerics], function(x) 
+    suppressWarnings(as.numeric(as.character(as.numeric(gsub(",", ".", gsub("\\.", "", x)))))))
   return(table)
 }
 
 extract_table_from_html <- function(file.name, labels, N, R, eliminate_empty_column, numerics) {
   table = readHTMLTable(paste0("PRA2-Data/", file.name), which = N, skip.rows = R)
-  
   if(eliminate_empty_column && !('Provincia' %in% labels)) {
     table <- table[,!apply(table, 2, function(x) all(gsub(" ", "", x)=="", na.rm=TRUE))]
   }
@@ -30,10 +18,11 @@ extract_table_from_html <- function(file.name, labels, N, R, eliminate_empty_col
   
   if ('Provincia' %in% labels) {
     table$Codigo <- as.character(table$Codigo)
-    provincia <- c('VI', 'AB', 'A', 'AL', 'AV', 'BA', 'IB', 'B', 'BU', 'CC', 'CA', 'CS', 'CR', 'CO', 'C', 'CU', 'GI', 'GR', 'GU', 'SS', 'H', 'HU', 'J', 'LE', 'L', 'LO', 'LU', 'M', 'MA', 'MU', 'NA', 'OU', 'O', 'P', 'GC', 'PO', 'SA', 'TF', 'S', 'SG', 'SE', 'SO', 'T', 'TE', 'TO', 'V', 'VA', 'BI', 'ZA', 'Z', 'CE', 'ML')
+    provincia <- c('VI', 'AB', 'A', 'AL', 'AV', 'BA', 'IB', 'B', 'BU', 'CC', 'CA', 'CS', 'CR', 'CO', 'C', 'CU', 'GI',
+                   'GR', 'GU', 'SS', 'H', 'HU', 'J', 'LE', 'L', 'LO', 'LU', 'M', 'MA', 'MU', 'NA', 'OU', 'O', 'P', 'GC',
+                   'PO', 'SA', 'TF', 'S', 'SG', 'SE', 'SO', 'T', 'TE', 'TO', 'V', 'VA', 'BI', 'ZA', 'Z', 'CE', 'ML')
     table$Provincia <- provincia[as.numeric(substr(table$Codigo, 1, 2))]
   }
-  
   table <- convert_to_numeric(table, numerics)
   return(table)
 }
@@ -48,13 +37,11 @@ eliminate_colon <- function(table) {
 }
 
 generate_xls <- function(source, labels.table1, labels.table2, numerics.table1, numerics.table2, skip.table1, skip.table2, merge.by) {
-  
   eliminate_empty <- TRUE
   table1 <- extract_table_from_html(source, labels.table1, 1, skip.table1, eliminate_empty, numerics.table1)
   
   if (any(!is.na(labels.table2))) {
     table2 <- extract_table_from_html(source, labels.table2, 2, skip.table2, eliminate_empty, numerics.table2) 
-    
     table_final <- merge(table1, table2, by = intersect(names(table1), names(table2)),
           by.x = merge.by, by.y = merge.by, all = TRUE)
     
@@ -80,8 +67,6 @@ generate_xls("aec-214_2010.html", labels_aec_214_1, labels_aec_214_2, numerics_a
 generate_xls("aec-214_2011.html", labels_aec_214_1, labels_aec_214_2, numerics_aec_214_1, numerics_aec_214_2, 1, 1:2, merge_aec_214)
 generate_xls("aec-214_2012.html", labels_aec_214_1, labels_aec_214_2, numerics_aec_214_1, numerics_aec_214_2, 1, 1:2, merge_aec_214)
 generate_xls("aec-214_2013.html", labels_aec_214_1, labels_aec_214_2, numerics_aec_214_1, numerics_aec_214_2, 1, 1:2, merge_aec_214)
-
-
 
 ########## ------------- Ficheros aec-217 -------------------------------------------------------------------------------------------------------------
 labels_aec_217_1 <- c("Comarca", "Estaciones", "Enero", "Febrero", "Marzo", "Abril","Mayo", "Junio")
